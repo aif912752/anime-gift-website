@@ -5,8 +5,8 @@ import {
   HowDarePage,
   PresentsPage,
   SongPage,
-  PicturesPage,
-  LetterPage
+  HeartWallPage,
+  LoveAnimation
 } from './components';
 
 type Page = 'home' | 'how-dare' | 'presents' | 'song' | 'pictures' | 'letter';
@@ -25,8 +25,8 @@ function App() {
       {currentPage === 'how-dare' && <HowDarePage key="how-dare" navigateTo={navigateTo} />}
       {currentPage === 'presents' && <PresentsPage key="presents" navigateTo={navigateTo} />}
       {currentPage === 'song' && <SongPage key="song" isPlaying={isPlaying} setIsPlaying={setIsPlaying} navigateTo={navigateTo} />}
-      {currentPage === 'pictures' && <PicturesPage key="pictures" navigateTo={navigateTo} />}
-      {currentPage === 'letter' && <LetterPage key="letter" navigateTo={navigateTo} />}
+      {currentPage === 'pictures' && <LoveAnimation key="pictures" />}
+      {currentPage === 'letter' && <HeartWallPage key="letter" />}
     </AnimatePresence>
   );
 }

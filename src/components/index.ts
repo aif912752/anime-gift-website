@@ -3,5 +3,6 @@ export { PresentsPage } from './PresentsPage';
 export { HomePage } from './HomePage';
 export { HowDarePage } from './HowDarePage';
 export { SongPage } from './SongPage';
-export { PicturesPage } from './PicturesPage';
 export { LetterPage } from './LetterPage';
+export { default as LoveAnimation } from './LoveAnimation';
+export { default as HeartWallPage } from './HeartWallPage';
