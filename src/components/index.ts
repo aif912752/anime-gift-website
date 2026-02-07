@@ -4,5 +4,6 @@ export { HomePage } from './HomePage';
 export { HowDarePage } from './HowDarePage';
 export { SongPage } from './SongPage';
 export { LetterPage } from './LetterPage';
+export { LoveMessagePage } from './LoveMessagePage';
 export { default as LoveAnimation } from './LoveAnimation';
 export { default as HeartWallPage } from './HeartWallPage';

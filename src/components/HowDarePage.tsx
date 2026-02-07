@@ -18,7 +18,7 @@ export function HowDarePage({ navigateTo }: HowDarePageProps) {
         transition={{ delay: 0.2 }}
         className="text-3xl md:text-5xl font-bold text-gray-700 mb-12 tracking-wide"
       >
-        HOW DARE YOU!
+        กล้าดียังไง!
       </motion.h1>
 
       <motion.img
@@ -37,7 +37,7 @@ export function HowDarePage({ navigateTo }: HowDarePageProps) {
         onClick={() => navigateTo('home')}
         className="px-12 py-4 bg-[#c75b5b] hover:bg-[#b54d4d] text-white font-semibold rounded-full text-xl transition-all transform hover:scale-105 shadow-lg"
       >
-        TRY AGAIN
+        ลองใหม่
       </motion.button>
     </motion.div>
   );

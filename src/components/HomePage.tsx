@@ -18,7 +18,7 @@ export function HomePage({ navigateTo }: HomePageProps) {
         transition={{ delay: 0.2 }}
         className="text-3xl md:text-5xl font-bold text-gray-700 mb-12 tracking-wide"
       >
-        PLS ACCEPT THE GIFT
+        กรุณารับของขวัญนะ
       </motion.h1>
 
       <motion.img
@@ -40,13 +40,13 @@ export function HomePage({ navigateTo }: HomePageProps) {
           onClick={() => navigateTo('presents')}
           className="px-12 py-4 bg-[#c75b5b] hover:bg-[#b54d4d] text-white font-semibold rounded-full text-xl transition-all transform hover:scale-105 shadow-lg"
         >
-          YES
+          รับ
         </button>
         <button
           onClick={() => navigateTo('how-dare')}
           className="px-12 py-4 bg-[#c75b5b] hover:bg-[#b54d4d] text-white font-semibold rounded-full text-xl transition-all transform hover:scale-105 shadow-lg"
         >
-          NO
+          ไม่รับ
         </button>
       </motion.div>
     </motion.div>

@@ -54,8 +54,13 @@ const offset_pitn = {
   block23: [-6, 1],
 };
 
-const HeartWallPage: React.FC = () => {
+interface HeartWallPageProps {
+  navigateTo: (page: 'love-message') => void;
+}
+
+const HeartWallPage: React.FC<HeartWallPageProps> = () => {
   const [started, setStarted] = useState(false);
+  
   const loveRef = useRef<HTMLDivElement>(null);
   const blockRef = useRef<HTMLDivElement>(null);
   const block_left = useRef(0);

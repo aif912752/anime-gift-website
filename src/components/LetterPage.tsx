@@ -23,7 +23,7 @@ export function LetterPage({ navigateTo }: LetterPageProps) {
       exit={{ opacity: 0 }}
       className="min-h-screen bg-gradient-to-br from-rose-100 via-pink-50 to-purple-100 p-4 md:p-8 relative overflow-hidden"
     >
-      {/* Floating Hearts Background */}
+      {/* Floating Hearts กลับground */}
       {floatingHearts.map((heart) => (
         <motion.div
           key={heart.id}
@@ -70,7 +70,7 @@ export function LetterPage({ navigateTo }: LetterPageProps) {
             transition={{ repeat: Infinity, duration: 3 }}
             className="text-3xl md:text-5xl font-bold text-[#c75b5b] mb-2"
           >
-            Happy Anniversary!
+            สุขสันต์วันครบรอบ!
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -78,7 +78,7 @@ export function LetterPage({ navigateTo }: LetterPageProps) {
             transition={{ delay: 0.3 }}
             className="text-xl text-gray-500"
           >
-            My Everything
+            ทุกสิ่งของฉัน
           </motion.p>
         </motion.div>
 
@@ -127,7 +127,7 @@ export function LetterPage({ navigateTo }: LetterPageProps) {
           </motion.div>
 
           <p className="text-gray-700 leading-relaxed text-lg md:text-xl">
-            Today we celebrate you—the beautiful soul who makes my world brighter just by being in it. From your smile that melts away my stress to the kindness you show everyone around you, you've filled my life with so much joy and meaning. Every moment with you feels like a gift, and I'm endlessly grateful for the laughter, the adventures, and even the quiet times we share together. You're the reason my days feel warmer, happier, and more complete.
+            วันนี้เรามาฉลองให้เธอ — วิญญาณงามที่ทำให้โลกของฉันสดใสขึ้นเพียงแค่มีเธออยู่ จากรอยยิ้มของเธอที่ละลายความเครียดของฉัน ไปจนถึงความใจดีที่เธอแสดงให้ทุกคนรอบตัว เธอได้เติมเต็มชีวิตฉันด้วยความสุขและความหมายมากมาย ทุกช่วงเวลากับเธอรู้สึกเหมือนของขวัญ และฉันรู้สึกขอบคุณไม่รู้จบสำหรับเสียงหัวเราะ การผจญภัย และแม้แต่ช่วงเวลาที่เงียบสงบที่เราได้แบ่งปันกัน เธอคือเหตุผลที่วันของฉันรู้สึกอบอุ่น มีความสุข และสมบูรณ์มากขึ้น
           </p>
 
           <motion.div
@@ -138,7 +138,7 @@ export function LetterPage({ navigateTo }: LetterPageProps) {
           />
 
           <p className="text-gray-700 leading-relaxed text-lg md:text-xl">
-            As we step into another year together, I just want you to know how deeply you're loved and cherished. I promise to keep standing by your side, cheering you on, and loving you in every season ahead. Thank you for being my safe haven, my inspiration, and my greatest blessing. Here's to celebrating us today, and to all the beautiful memories we'll continue to create. No matter what the future holds, I'll always be here, loving you endlessly.
+            เมื่อเราก้าวเข้าสู่อีกปีด้วยกัน ฉันแค่อยากให้เธอรู้ว่าเธอถูกรักและดูแลมากแค่ไหน ฉันสัญญาว่าจะยืนเคียงข้างเธอตลอดไป เป็นกำลังใจให้เธอ และรักเธอในทุกฤดูกาลข้างหน้า ขอบคุณที่เป็นที่พักพิงของฉัน แรงบันดาลใจของฉัน และพรอันยิ่งใหญ่ที่สุดของฉัน มาฉลองให้เราในวันนี้ และความทรงจำที่สวยงามทั้งหมดที่เราจะสร้างต่อไป ไม่ว่าอนาคตจะเก็บอะไรไว้ ฉันจะอยู่ตรงนี้เสมอ รักเธอไม่มีที่สิ้นสุด
           </p>
 
           {/* Signature */}
@@ -148,7 +148,7 @@ export function LetterPage({ navigateTo }: LetterPageProps) {
             transition={{ delay: 1.2 }}
             className="text-right mt-8"
           >
-            <p className="text-[#c75b5b] font-semibold text-xl">With all my love,</p>
+            <p className="text-[#c75b5b] font-semibold text-xl">ด้วยความรักทั้งหมด,</p>
             <motion.div
               animate={{ x: [0, 5, 0] }}
               transition={{ repeat: Infinity, duration: 2 }}

@@ -19,7 +19,7 @@ export function PresentsPage({ navigateTo }: PresentsPageProps) {
         transition={{ delay: 0.2 }}
         className="text-3xl md:text-5xl font-bold text-gray-700 mb-4 tracking-wide"
       >
-        PRESENT FOR YOU
+        ของขวัญสำหรับเธอ
       </motion.h1>
 
       <motion.p
@@ -28,7 +28,7 @@ export function PresentsPage({ navigateTo }: PresentsPageProps) {
         transition={{ delay: 0.3 }}
         className="text-gray-500 mb-12 text-lg"
       >
-        CLICK ANY GIFT TO OPEN
+        คลิกของขวัญเพื่อเปิด
       </motion.p>
 
       <div className="flex flex-wrap justify-center gap-6 md:gap-8">

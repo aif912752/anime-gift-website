@@ -30,7 +30,7 @@ export function PicturesPage({ navigateTo }: PicturesPageProps) {
         className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-6 relative z-20"
       >
         <ArrowLeft className="w-5 h-5" />
-        Back
+        กลับ
       </motion.button>
 
       <div className="max-w-4xl mx-auto relative">
@@ -40,7 +40,7 @@ export function PicturesPage({ navigateTo }: PicturesPageProps) {
           animate={{ y: 0, opacity: 1 }}
           className="text-3xl md:text-5xl font-bold text-center text-[#c75b5b] mb-4"
         >
-          Our Love Grows
+          ความรักเราเติบโต
         </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}
@@ -48,7 +48,7 @@ export function PicturesPage({ navigateTo }: PicturesPageProps) {
           transition={{ delay: 0.3 }}
           className="text-center text-gray-500 mb-8"
         >
-          Like a tree, our love grows stronger every day
+          เหมือนต้นไม้ ความรักเราเติบโตแข็งแรงขึ้นทุกวัน
         </motion.p>
 
         {/* Heart Tree Container */}
@@ -175,7 +175,7 @@ export function PicturesPage({ navigateTo }: PicturesPageProps) {
           className="text-center mt-8"
         >
           <p className="text-xl text-gray-600 italic">
-            "Every heartbeat is a reminder of my love for you"
+            "ทุกจังหวะการเต้นของหัวใจคือการเตือนให้รู้ว่าฉันรักเธอ"
           </p>
         </motion.div>
       </div>
