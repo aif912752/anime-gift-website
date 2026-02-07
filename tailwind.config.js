@@ -4,6 +4,11 @@ module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Quicksand', 'Mitr', 'sans-serif'],
+        thai: ['Mitr', 'sans-serif'],
+        cute: ['Quicksand', 'Mitr', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
