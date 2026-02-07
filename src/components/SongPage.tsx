@@ -29,7 +29,7 @@ const sparkles = Array.from({ length: 30 }, (_, i) => ({
 
 export function SongPage({ isPlaying, setIsPlaying, navigateTo }: SongPageProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [progress, setProgress] = useState(33);
+  const [progress] = useState(33);
 
   // ควบคุมการเล่น/หยุดเพลง
   useEffect(() => {
