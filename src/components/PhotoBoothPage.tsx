@@ -59,15 +59,15 @@ export function PhotoBoothPage({ navigateTo }: PhotoBoothPageProps) {
   }, []);
 
   const handleCapture = async () => {
-    if (!gridRef.current) return;
-    
+    if (!previewRef.current) return;
+
     setIsCapturing(true);
     setHideUI(true);
-    
+
     try {
       await new Promise(resolve => setTimeout(resolve, 200));
-      
-      const images = gridRef.current.querySelectorAll('img');
+
+      const images = previewRef.current.querySelectorAll('img');
       await Promise.all(
         Array.from(images).map(
           (img: any) =>
@@ -81,10 +81,77 @@ export function PhotoBoothPage({ navigateTo }: PhotoBoothPageProps) {
             })
         )
       );
-      
+
+      // Store original transform if polaroid
+      const isPolaroid = selectedFrame.id === 'polaroid';
+      const originalTransform = isPolaroid ? previewRef.current.style.transform : '';
+
+      // Remove transform for clean capture
+      if (isPolaroid && previewRef.current) {
+        previewRef.current.style.transform = 'none';
+      }
+
+      // Fix object-fit for images before capture
+      const allImages = previewRef.current.querySelectorAll('img');
+      const originalStyles: Array<{img: HTMLImageElement, src: string, width: string, height: string, objectFit: string}> = [];
+
+      allImages.forEach((img) => {
+        const htmlImg = img as HTMLImageElement;
+
+        // Store original styles
+        originalStyles.push({
+          img: htmlImg,
+          src: htmlImg.src,
+          width: htmlImg.style.width,
+          height: htmlImg.style.height,
+          objectFit: htmlImg.style.objectFit
+        });
+
+        // Calculate proper dimensions for object-fit: cover
+        const containerRect = htmlImg.parentElement?.getBoundingClientRect();
+        if (!containerRect) return;
+
+        const naturalRatio = htmlImg.naturalWidth / htmlImg.naturalHeight;
+        const containerRatio = containerRect.width / containerRect.height;
+
+        let finalWidth, finalHeight;
+
+        if (naturalRatio > containerRatio) {
+          // Image is wider than container - fit to height
+          finalHeight = containerRect.height;
+          finalWidth = containerRect.height * naturalRatio;
+        } else {
+          // Image is taller than container - fit to width
+          finalWidth = containerRect.width;
+          finalHeight = containerRect.width / naturalRatio;
+        }
+
+        // Calculate offset to center the image
+        const offsetX = (containerRect.width - finalWidth) / 2;
+        const offsetY = (containerRect.height - finalHeight) / 2;
+
+        // Apply styles to simulate object-fit: cover
+        htmlImg.style.width = `${finalWidth}px`;
+        htmlImg.style.height = `${finalHeight}px`;
+        htmlImg.style.position = 'absolute';
+        htmlImg.style.left = `${offsetX}px`;
+        htmlImg.style.top = `${offsetY}px`;
+        htmlImg.style.objectFit = 'none';
+
+        // Make sure parent has proper positioning
+        if (htmlImg.parentElement) {
+          const parent = htmlImg.parentElement;
+          parent.style.position = 'relative';
+          parent.style.overflow = 'hidden';
+        }
+      });
+
       await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const canvas = await html2canvas(gridRef.current, {
+
+      // Force layout recalculation
+      previewRef.current.offsetHeight;
+
+      const canvas = await html2canvas(previewRef.current, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
@@ -92,6 +159,27 @@ export function PhotoBoothPage({ navigateTo }: PhotoBoothPageProps) {
         logging: false,
         imageTimeout: 5000,
       });
+
+      // Restore original styles
+      originalStyles.forEach(({img, width, height, objectFit}) => {
+        img.style.width = width;
+        img.style.height = height;
+        img.style.objectFit = objectFit;
+        img.style.position = '';
+        img.style.left = '';
+        img.style.top = '';
+
+        // Reset parent styles
+        if (img.parentElement) {
+          img.parentElement.style.position = '';
+          img.parentElement.style.overflow = '';
+        }
+      });
+
+      // Restore transform
+      if (isPolaroid && previewRef.current) {
+        previewRef.current.style.transform = originalTransform;
+      }
       
       const dataUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
@@ -121,7 +209,7 @@ export function PhotoBoothPage({ navigateTo }: PhotoBoothPageProps) {
       case 'bw': return 'grayscale';
       case 'warm': return 'sepia-[0.2] saturate-[1.3] hue-rotate-[-10deg] brightness-105';
       case 'cool': return 'saturate-[1.1] hue-rotate-[10deg] brightness-102';
-      case 'pastel': return 'saturate-[0.8] brightness-110 contrast-95';
+      case 'pastel': return 'saturate-[0.5] brightness-125 contrast-90 opacity-90';
       case 'dreamy': return 'saturate-[1.2] brightness-105 contrast-90';
       default: return '';
     }
@@ -149,15 +237,15 @@ export function PhotoBoothPage({ navigateTo }: PhotoBoothPageProps) {
         <div className="flex justify-center">
           <div 
             ref={previewRef}
-            className={`relative bg-white rounded-3xl shadow-2xl overflow-hidden ${selectedFrame.class} ${getFilterClass()}`}
-            style={{ width: '500px', maxWidth: '100%' }}
+            className={`relative bg-white shadow-2xl overflow-hidden ${selectedFrame.class} ${getFilterClass()} ${selectedFrame.id === 'polaroid' || selectedFrame.id === 'heart' ? '' : 'rounded-3xl'}`}
+            style={{ width: selectedFrame.id === 'polaroid' ? '420px' : '500px', maxWidth: '100%' }}
           >
             {/* Frame decorations */}
             {selectedFrame.id === 'cute' && <div className="absolute inset-0 pointer-events-none z-20"><div className="absolute top-2 left-2 text-3xl">🎀</div><div className="absolute top-2 right-2 text-3xl">🎀</div><div className="absolute bottom-2 left-2 text-3xl">💖</div><div className="absolute bottom-2 right-2 text-3xl">💖</div></div>}
             {selectedFrame.id === 'heart' && <div className="absolute inset-0 pointer-events-none z-20"><div className="absolute top-1 left-4 text-2xl opacity-60">💕</div><div className="absolute top-8 right-4 text-xl opacity-60">💖</div><div className="absolute bottom-8 left-6 text-xl opacity-60">💗</div><div className="absolute bottom-2 right-6 text-2xl opacity-60">💝</div></div>}
             {selectedFrame.id === 'anime' && <div className="absolute inset-0 pointer-events-none z-20"><div className="absolute -top-1 -left-1 w-8 h-8 border-l-4 border-t-4 border-pink-400 rounded-tl-lg" /><div className="absolute -top-1 -right-1 w-8 h-8 border-r-4 border-t-4 border-pink-400 rounded-tr-lg" /><div className="absolute -bottom-1 -left-1 w-8 h-8 border-l-4 border-b-4 border-pink-400 rounded-bl-lg" /><div className="absolute -bottom-1 -right-1 w-8 h-8 border-r-4 border-b-4 border-pink-400 rounded-br-lg" /></div>}
             
-            <div className="p-5">
+            <div className={selectedFrame.id === 'polaroid' ? '' : 'p-5'}>
               {/* Tab Switcher */}
               {!hideUI && (
                 <div className="flex justify-center gap-2 mb-4">
@@ -168,15 +256,15 @@ export function PhotoBoothPage({ navigateTo }: PhotoBoothPageProps) {
 
               {/* Content - SQUARE Grid */}
               {activeTab === 'preview' || hideUI ? (
-                <div ref={gridRef} className="grid grid-cols-2 gap-3">
+                <div ref={gridRef} className={`grid grid-cols-2 gap-3 ${selectedFrame.id === 'polaroid' ? 'polaroid-grid' : ''}`}>
                   {/* Slot 1 - Square */}
-                  <div className="relative aspect-square rounded-xl overflow-hidden shadow-md bg-pink-100">
+                  <div className={`relative aspect-square overflow-hidden shadow-md bg-pink-100 ${selectedFrame.id === 'polaroid' ? '' : 'rounded-xl'}`}>
                     <img src="/images/11.jpg" alt="Photo 1" className="w-full h-full object-cover" crossOrigin="anonymous" />
                     {selectedSticker.id !== 'none' && <div className="absolute -top-1 -right-1 text-2xl">{selectedSticker.emoji}</div>}
                   </div>
                   
                   {/* Slot 2 - Square */}
-                  <div className="relative aspect-square rounded-xl overflow-hidden shadow-md">
+                  <div className={`relative aspect-square overflow-hidden shadow-md ${selectedFrame.id === 'polaroid' ? '' : 'rounded-xl'}`}>
                     <div className="w-full h-full bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100 p-3 flex flex-col justify-center overflow-hidden">
                       <div className="flex items-center gap-2 mb-2">
                         <Heart className="w-5 h-5 text-[#c75b5b] fill-[#c75b5b] flex-shrink-0" />
@@ -202,44 +290,46 @@ export function PhotoBoothPage({ navigateTo }: PhotoBoothPageProps) {
                   </div>
                   
                   {/* Slot 3 - Square */}
-                  <div className="relative aspect-square rounded-xl overflow-hidden shadow-md">
-                    <div className="w-full h-full bg-[#f0e6f6] p-2 flex flex-col relative">
-                      <div className="absolute top-1 right-1 text-base opacity-30">💌</div>
-                      <div className="absolute bottom-1 left-1 text-sm opacity-30">💕</div>
+                  <div className={`relative aspect-square overflow-hidden shadow-md ${selectedFrame.id === 'polaroid' ? '' : 'rounded-xl'}`}>
+                    <div className="w-full h-full bg-[#f0e6f6] flex flex-col relative p-3">
+                      <div className="absolute top-2 right-2 text-lg opacity-30">💌</div>
+                      <div className="absolute bottom-2 left-2 text-base opacity-30">💕</div>
                       <div className="relative flex-1 flex items-center justify-center">
-                        <div className="relative w-24 h-20">
-                          <div className="absolute bottom-0 left-0 right-0 h-12 bg-[#ff6f61] rounded-b-lg" style={{ clipPath: 'polygon(0 0, 50% 45%, 100% 0, 100% 100%, 0 100%)' }} />
-                          <div className="absolute top-0 left-0 right-0 h-8 bg-[#d9534f] rounded-t-lg" style={{ clipPath: 'polygon(0 0, 100% 0, 50% 100%)', transform: 'rotateX(180deg)' }} />
-                          <div className="absolute bottom-2 left-1 right-1 h-14 bg-white rounded-lg shadow-lg p-1 flex flex-col justify-center" style={{ transform: 'translateY(-10px)' }}>
-                            <div className="text-[7px] text-[#d9534f] bg-rose-100 rounded px-1 py-0.5 w-fit mb-1">ถึง: คนพิเศษ</div>
-                            <div className="text-[9px] text-gray-700 text-center leading-tight">ขอให้น่ารัก<br/>ตลอดไป 💕</div>
+                        <div className="relative w-28 h-24">
+                          <div className="absolute bottom-0 left-0 right-0 h-16 bg-[#ff6f61] rounded-b-lg" style={{ clipPath: 'polygon(0 0, 50% 45%, 100% 0, 100% 100%, 0 100%)' }} />
+                          <div className="absolute top-0 left-0 right-0 h-10 bg-[#d9534f] rounded-t-lg" style={{ clipPath: 'polygon(0 0, 100% 0, 50% 100%)', transform: 'rotateX(180deg)' }} />
+                          <div className="absolute bottom-2 left-1 right-1 h-16 bg-white rounded-lg shadow-lg p-2 flex flex-col justify-center" style={{ transform: 'translateY(-10px)' }}>
+                            <div className="text-[10px] text-[#d9534f] bg-rose-100 rounded px-2 py-1 w-fit mb-1">ถึง: คนพิเศษ</div>
+                            <div className="text-xs text-gray-700 text-center leading-tight">ขอให้น่ารัก<br/>ตลอดไป 💕</div>
                           </div>
-                          <div className="absolute -top-1 left-3 text-sm">💕</div>
-                          <div className="absolute -top-1 right-3 text-xs">💖</div>
+                          <div className="absolute -top-1 left-3 text-lg">💕</div>
+                          <div className="absolute -top-1 right-3 text-sm">💖</div>
                         </div>
                       </div>
                     </div>
                   </div>
                   
                   {/* Slot 4 - Square */}
-                  <div className="relative aspect-square rounded-xl overflow-hidden shadow-md bg-pink-100">
+                  <div className={`relative aspect-square overflow-hidden shadow-md bg-pink-100 ${selectedFrame.id === 'polaroid' ? '' : 'rounded-xl'}`}>
                     <img src="/images/22.jpg" alt="Photo 2" className="w-full h-full object-cover" crossOrigin="anonymous" />
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-3">
-                  {savedMemories.length === 0 ? <div className="col-span-2 text-center py-8 bg-gray-50 rounded-xl"><div className="text-4xl mb-2">📸</div><p className="text-gray-500 text-sm">ยังไม่มีภาพที่บันทึก</p></div> : savedMemories.slice(0, 4).map((memory, index) => <motion.div key={memory.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: index * 0.1 }} className="relative aspect-square rounded-xl overflow-hidden"><img src={memory.dataUrl} alt={memory.title} className="w-full h-full object-cover" /></motion.div>)}
+                <div className={`grid grid-cols-2 gap-3 ${selectedFrame.id === 'polaroid' ? 'polaroid-grid' : ''}`}>
+                  {savedMemories.length === 0 ? <div className={`col-span-2 text-center py-8 bg-gray-50 ${selectedFrame.id === 'polaroid' ? '' : 'rounded-xl'}`}><div className="text-4xl mb-2">📸</div><p className="text-gray-500 text-sm">ยังไม่มีภาพที่บันทึก</p></div> : savedMemories.slice(0, 4).map((memory, index) => <motion.div key={memory.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: index * 0.1 }} className={`relative aspect-square overflow-hidden ${selectedFrame.id === 'polaroid' ? '' : 'rounded-xl'}`}><img src={memory.dataUrl} alt={memory.title} className="w-full h-full object-cover" /></motion.div>)}
                 </div>
               )}
 
-              {/* Footer */}
-              <div className="mt-4 text-center">
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-100 to-purple-100 px-4 py-2 rounded-full">
-                  <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
-                  <span className="text-sm text-gray-600">Anime Gift Website</span>
-                  <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
+              {/* Footer - Hidden when using Polaroid frame */}
+              {selectedFrame.id !== 'polaroid' && (
+                <div className="mt-4 text-center">
+                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-100 to-purple-100 px-4 py-2 rounded-full">
+                    <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
+                    <span className="text-sm text-gray-600">Anime Gift Website</span>
+                    <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
