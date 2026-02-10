@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
+import { Camera } from 'lucide-react';
 import { GiftCard } from './GiftCard';
 
 interface PresentsPageProps {
-  navigateTo: (page: 'song' | 'pictures' | 'letter') => void;
+  navigateTo: (page: 'song' | 'pictures' | 'letter' | 'photo-booth') => void;
 }
 
 export function PresentsPage({ navigateTo }: PresentsPageProps) {
@@ -56,6 +57,21 @@ export function PresentsPage({ navigateTo }: PresentsPageProps) {
           delay={0.6}
         />
       </div>
+
+      {/* Photo Booth Button */}
+      <motion.button
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8 }}
+        onClick={() => navigateTo('photo-booth')}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="mt-12 flex items-center gap-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all"
+      >
+        <Camera className="w-6 h-6" />
+        <span className="font-bold text-lg">📸 Photo Booth</span>
+        <span className="text-sm opacity-80">ถ่ายรูปเก็บไว้เลย!</span>
+      </motion.button>
     </motion.div>
   );
 }

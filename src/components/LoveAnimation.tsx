@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
+import { SaveButton } from './SaveButton';
+import { savePhotoMemory } from '../hooks/usePhotoMemories';
 
 interface LoveAnimationProps {
   navigateTo: (page: 'presents') => void;
@@ -8,12 +10,46 @@ interface LoveAnimationProps {
 
 export default function LoveAnimation({ navigateTo }: LoveAnimationProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [hasCaptured, setHasCaptured] = useState(false);
 
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
+  
+  // Capture memory when envelope is opened
+  useEffect(() => {
+    if (!isOpen || hasCaptured || !containerRef.current) return;
+    
+    // Wait for animation to complete
+    const timer = setTimeout(async () => {
+      try {
+        const html2canvas = (await import('html2canvas')).default;
+        const canvas = await html2canvas(containerRef.current!, {
+          scale: 1.2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#f0e6f6',
+          logging: false,
+        });
+        
+        const dataUrl = canvas.toDataURL('image/png');
+        savePhotoMemory({
+          pageId: 'letter',
+          dataUrl,
+          title: '💌 จดหมายรัก',
+        });
+        setHasCaptured(true);
+      } catch (error) {
+        console.error('Failed to capture LetterPage:', error);
+      }
+    }, 1500);
+    
+    return () => clearTimeout(timer);
+  }, [isOpen, hasCaptured]);
 
   return (
     <motion.div
+      ref={containerRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -72,6 +108,12 @@ export default function LoveAnimation({ navigateTo }: LoveAnimationProps) {
         <button id="open" onClick={open}>เปิดจดหมาย</button>
         <button id="reset" onClick={close}>ปิดซอง</button>
       </div>
+
+      {/* Save Button */}
+      <SaveButton
+        pageId="love-letter"
+        containerRef={containerRef}
+      />
 
       {/* Original CSS */}
       <style>{`

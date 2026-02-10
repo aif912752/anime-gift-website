@@ -7,3 +7,5 @@ export { LetterPage } from './LetterPage';
 export { LoveMessagePage } from './LoveMessagePage';
 export { default as LoveAnimation } from './LoveAnimation';
 export { default as HeartWallPage } from './HeartWallPage';
+export { SaveButton, SavedItemsButton, SavedItemsGallery } from './SaveButton';
+export { PhotoBoothPage } from './PhotoBoothPage';

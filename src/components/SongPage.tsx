@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, SkipBack, SkipForward, Heart, Music, ArrowLeft } from 'lucide-react';
+import { savePhotoMemory } from '../hooks/usePhotoMemories';
 
 interface SongPageProps {
   isPlaying: boolean;
@@ -29,7 +30,9 @@ const sparkles = Array.from({ length: 30 }, (_, i) => ({
 
 export function SongPage({ isPlaying, setIsPlaying, navigateTo }: SongPageProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [progress] = useState(33);
+  const [hasCaptured, setHasCaptured] = useState(false);
 
   // ควบคุมการเล่น/หยุดเพลง
   useEffect(() => {
@@ -46,8 +49,40 @@ export function SongPage({ isPlaying, setIsPlaying, navigateTo }: SongPageProps)
     }
   }, [isPlaying]);
 
+  // Capture memory when page is shown
+  useEffect(() => {
+    if (hasCaptured || !containerRef.current) return;
+    
+    // Wait for animations to settle
+    const timer = setTimeout(async () => {
+      try {
+        const html2canvas = (await import('html2canvas')).default;
+        const canvas = await html2canvas(containerRef.current!, {
+          scale: 1.2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: null,
+          logging: false,
+        });
+        
+        const dataUrl = canvas.toDataURL('image/png');
+        savePhotoMemory({
+          pageId: 'song',
+          dataUrl,
+          title: '🎵 เพลงพิเศษ',
+        });
+        setHasCaptured(true);
+      } catch (error) {
+        console.error('Failed to capture SongPage:', error);
+      }
+    }, 2000);
+    
+    return () => clearTimeout(timer);
+  }, [hasCaptured]);
+
   return (
     <motion.div
+      ref={containerRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}

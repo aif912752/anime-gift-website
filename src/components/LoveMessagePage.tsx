@@ -1,6 +1,8 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
+import { SaveButton } from './SaveButton';
+import { savePhotoMemory } from '../hooks/usePhotoMemories';
 
 interface LoveMessagePageProps {
   navigateTo: (page: 'presents') => void;
@@ -28,6 +30,8 @@ export function LoveMessagePage({ navigateTo }: LoveMessagePageProps) {
   const [currentMessage, setCurrentMessage] = useState(0);
   const [confetti, setConfetti] = useState<Array<{ id: number; x: number; y: number; color: string; delay: number }>>([]);
   const [floatingHearts, setFloatingHearts] = useState<Array<{ id: number; x: number; delay: number; duration: number }>>([]);
+  const [hasCaptured, setHasCaptured] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // สร้าง floating hearts ลอยทั่วจอ
   useEffect(() => {
@@ -39,6 +43,36 @@ export function LoveMessagePage({ navigateTo }: LoveMessagePageProps) {
     }));
     setFloatingHearts(hearts);
   }, []);
+  
+  // Capture memory when page loads
+  useEffect(() => {
+    if (hasCaptured || !containerRef.current) return;
+    
+    const timer = setTimeout(async () => {
+      try {
+        const html2canvas = (await import('html2canvas')).default;
+        const canvas = await html2canvas(containerRef.current!, {
+          scale: 1.2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: null,
+          logging: false,
+        });
+        
+        const dataUrl = canvas.toDataURL('image/png');
+        savePhotoMemory({
+          pageId: 'love-message',
+          dataUrl,
+          title: '💕 ข้อความรัก',
+        });
+        setHasCaptured(true);
+      } catch (error) {
+        console.error('Failed to capture LoveMessagePage:', error);
+      }
+    }, 3000);
+    
+    return () => clearTimeout(timer);
+  }, [hasCaptured]);
 
   // กดหัวใจเพื่อเพิ่มจำนวน
   const handleHeartClick = useCallback((e: React.MouseEvent) => {
@@ -72,6 +106,7 @@ export function LoveMessagePage({ navigateTo }: LoveMessagePageProps) {
 
   return (
     <motion.div
+      ref={containerRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -306,6 +341,12 @@ export function LoveMessagePage({ navigateTo }: LoveMessagePageProps) {
           ))}
         </AnimatePresence>
 
+        {/* Save Button */}
+        <SaveButton
+          pageId="love-message"
+          message={loveMessages[currentMessage]}
+          containerRef={containerRef}
+        />
       </div>
     </motion.div>
   );

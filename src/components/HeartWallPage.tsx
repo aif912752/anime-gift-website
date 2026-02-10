@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import biubiuGif from '/images/biubiubiu.gif';
 import heartPng from '/images/heart.png';
+import { SaveButton } from './SaveButton';
+import { savePhotoMemory } from '../hooks/usePhotoMemories';
 
 const blk_pitn = {
   block1: [[0, 1], [0, 0], [-1, 0], [-1, -1]],
@@ -60,7 +62,9 @@ interface HeartWallPageProps {
 
 const HeartWallPage: React.FC<HeartWallPageProps> = () => {
   const [started, setStarted] = useState(false);
+  const [animationComplete, setAnimationComplete] = useState(false);
   
+  const containerRef = useRef<HTMLDivElement>(null);
   const loveRef = useRef<HTMLDivElement>(null);
   const blockRef = useRef<HTMLDivElement>(null);
   const block_left = useRef(0);
@@ -121,6 +125,35 @@ const HeartWallPage: React.FC<HeartWallPageProps> = () => {
     setStarted(true);
   };
 
+  // Capture memory when animation completes
+  useEffect(() => {
+    if (!animationComplete || !containerRef.current) return;
+    
+    const timer = setTimeout(async () => {
+      try {
+        const html2canvas = (await import('html2canvas')).default;
+        const canvas = await html2canvas(containerRef.current!, {
+          scale: 1.2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: null,
+          logging: false,
+        });
+        
+        const dataUrl = canvas.toDataURL('image/png');
+        savePhotoMemory({
+          pageId: 'heart-wall',
+          dataUrl,
+          title: '💖 กำแพงหัวใจ',
+        });
+      } catch (error) {
+        console.error('Failed to capture HeartWallPage:', error);
+      }
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, [animationComplete]);
+
   // Animation effect - only runs after started
   useEffect(() => {
     if (!started) return;
@@ -152,6 +185,10 @@ const HeartWallPage: React.FC<HeartWallPageProps> = () => {
           clearInterval(timerRef.current);
         }
         Rise();
+        // Mark animation as complete after a delay
+        setTimeout(() => {
+          setAnimationComplete(true);
+        }, 3000);
         return;
       }
 
@@ -205,7 +242,7 @@ const HeartWallPage: React.FC<HeartWallPageProps> = () => {
   };
 
   return (
-    <div className="heartwall-container">
+    <div ref={containerRef} className="heartwall-container">
       {/* Google Fonts */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -251,6 +288,14 @@ const HeartWallPage: React.FC<HeartWallPageProps> = () => {
             </div>
           </div>
         </>
+      )}
+
+      {/* Save Button */}
+      {started && (
+        <SaveButton
+          pageId="heart-wall"
+          containerRef={containerRef}
+        />
       )}
 
       <style>{`
