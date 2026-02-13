@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Download, Sparkles, Palette, X, Heart } from 'lucide-react';
+import { Camera, Sparkles, Palette, X, Heart } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { getPhotoMemories, type PhotoMemory } from '../hooks/usePhotoMemories';
 
@@ -48,7 +48,7 @@ export function PhotoBoothPage({ navigateTo }: PhotoBoothPageProps) {
   const [caption, setCaption] = useState('รักนะ 💕');
   const [isCapturing, setIsCapturing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [capturedImage] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'preview' | 'saved'>('preview');
   const [hideUI, setHideUI] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -192,14 +192,6 @@ export function PhotoBoothPage({ navigateTo }: PhotoBoothPageProps) {
       setIsCapturing(false);
       setHideUI(false);
     }
-  };
-
-  const handleDownload = () => {
-    if (!capturedImage) return;
-    const link = document.createElement('a');
-    link.download = `photobooth-${Date.now()}.png`;
-    link.href = capturedImage;
-    link.click();
   };
 
   const getFilterClass = () => {
